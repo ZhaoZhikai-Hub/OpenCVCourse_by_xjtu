@@ -1,4 +1,4 @@
-//Ñ§Ï°ÈçºÎ¼ì²âĞÎ×´»òÍ¼ÏñÖĞµÄÂÖÀª
+//å­¦ä¹ å¦‚ä½•æ£€æµ‹å½¢çŠ¶æˆ–å›¾åƒä¸­çš„è½®å»“
 #include<opencv2/imgcodecs.hpp>
 #include<opencv2/highgui.hpp>
 #include<opencv2/imgproc.hpp>
@@ -12,45 +12,53 @@ using namespace cv;
 /// </summary>
 
 
-//! »ñÈ¡ÂÖÀª
-void getContours(Mat imgDil,Mat img) {//imgDilÊÇ´«ÈëµÄÀ©ÕÅ±ßÔµµÄÍ¼ÏñÓÃÀ´²éÕÒÂÖÀª£¬imgÊÇÒªÔÚÆäÉÏ»æÖÆÂÖÀªµÄÍ¼Ïñ
-	vector<vector<Point>> contours;//ÂÖÀª¼ì²âµ½µÄÂÖÀª¡£Ã¿¸öÂÖÀªÏß´æ´¢ÎªÒ»¸öµãµÄÏòÁ¿
+//! è·å–è½®å»“
+void getContours(Mat imgDil,Mat img) {//imgDilæ˜¯ä¼ å…¥çš„æ‰©å¼ è¾¹ç¼˜çš„å›¾åƒç”¨æ¥æŸ¥æ‰¾è½®å»“ï¼Œimgæ˜¯è¦åœ¨å…¶ä¸Šç»˜åˆ¶è½®å»“çš„å›¾åƒ
+	vector<vector<Point>> contours;//è½®å»“æ£€æµ‹åˆ°çš„è½®å»“ã€‚æ¯ä¸ªè½®å»“çº¿å­˜å‚¨ä¸ºä¸€ä¸ªç‚¹çš„å‘é‡
 	
-	vector<Vec4i> hierarchy;//°üº¬¹ØÓÚÓ³ÏñÍØÆËµÄĞÅÏ¢  typedef Vec<int, 4> Vec4i;¾ßÓĞ4¸öÕûÊıÖµ
+	vector<Vec4i> hierarchy;//åŒ…å«å…³äºæ˜ åƒæ‹“æ‰‘çš„ä¿¡æ¯  typedef Vec<int, 4> Vec4i;å…·æœ‰4ä¸ªæ•´æ•°å€¼
 	
-	//ÔÚ¶şÖµÍ¼ÏñÖĞ²éÕÒÂÖÀª¡£¸Ãº¯ÊıÀûÓÃ¸ÃËã·¨´Ó¶şÖµÍ¼ÏñÖĞÌáÈ¡ÂÖÀª
+	//åœ¨äºŒå€¼å›¾åƒä¸­æŸ¥æ‰¾è½®å»“ã€‚è¯¥å‡½æ•°åˆ©ç”¨è¯¥ç®—æ³•ä»äºŒå€¼å›¾åƒä¸­æå–è½®å»“
 	findContours(imgDil, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-	//drawContours(img, contours, -1, Scalar(255, 0, 255), 2);//img£ºÒª»æÖÆÂÖÀªÔÚÊ²Ã´Í¼Æ¬ÉÏ£¬contours£ºÒª»æÖÆµÄÂÖÀª£¬-1¶¨ÒåÒª»æÖÆµÄÂÖÀªºÅ£¨-1±íÊ¾ËùÓĞÂÖÀª£©£¬Saclar±íÊ¾ÂÖÀªÑÕÉ«£¬2±íÊ¾ºñ¶È
-	vector<vector<Point>> conPoly(contours.size());//conployµÄÊıÁ¿Ó¦Ğ¡ÓÚcontours
+	//drawContours(img, contours, -1, Scalar(255, 0, 255), 2);//imgï¼šè¦ç»˜åˆ¶è½®å»“åœ¨ä»€ä¹ˆå›¾ç‰‡ä¸Šï¼Œcontoursï¼šè¦ç»˜åˆ¶çš„è½®å»“ï¼Œ-1å®šä¹‰è¦ç»˜åˆ¶çš„è½®å»“å·ï¼ˆ-1è¡¨ç¤ºæ‰€æœ‰è½®å»“ï¼‰ï¼ŒSaclarè¡¨ç¤ºè½®å»“é¢œè‰²ï¼Œ2è¡¨ç¤ºåšåº¦
+	vector<vector<Point>> conPoly(contours.size());//conployçš„æ•°é‡åº”å°äºcontours
 	vector<Rect> boundRect(contours.size());
-	//¹ıÂËÆ÷£ºÍ¨¹ıÂÖÀªÃæ»ıÀ´¹ıÂËÔëÉù
-	for (int i = 0; i < contours.size(); i++) {//±éÀú¼ì²âµ½µÄÂÖÀª
+	//è¿‡æ»¤å™¨ï¼šé€šè¿‡è½®å»“é¢ç§¯æ¥è¿‡æ»¤å™ªå£°
+	for (int i = 0; i < contours.size(); i++) {//éå†æ£€æµ‹åˆ°çš„è½®å»“
 		int area = contourArea(contours[i]);
 		
 		//cout << area << endl;
 		
 		string objectType;
-		if (area > 1000) {//ÂÖÀªÃæ»ı£¾1000²Å»æÖÆ
-			//¼ÆËãÂÖÀªÖÜ³¤»ò°¼¿Ó³¤¶È¡£¸Ãº¯Êı¼ÆËãÁËÇúÏß³¤¶ÈºÍ·â±ÕµÄÖÜ³¤¡£
-			float peri = arcLength(contours[i], true);//¼ÆËã·â±ÕÂÖÀªÖÜ³¤
-			approxPolyDP(contours[i], conPoly[i],0.02*peri,true);//ÒÔÖ¸¶¨µÄ¾«¶È½üËÆ¶à±ßĞÎÇúÏß¡£µÚ¶ş¸ö²ÎÊıconPloy[i]´æ´¢½üËÆµÄ½á¹û£¬ÊÇÊä³ö¡£
+		if (area > 1000) {//è½®å»“é¢ç§¯ï¼1000æ‰ç»˜åˆ¶
+			//è®¡ç®—è½®å»“å‘¨é•¿æˆ–å‡¹å‘é•¿åº¦ã€‚è¯¥å‡½æ•°è®¡ç®—äº†æ›²çº¿é•¿åº¦å’Œå°é—­çš„å‘¨é•¿ã€‚
+			float peri = arcLength(contours[i], true);//è®¡ç®—å°é—­è½®å»“å‘¨é•¿
+			approxPolyDP(contours[i], conPoly[i],0.02*peri,true);//ä»¥æŒ‡å®šçš„ç²¾åº¦è¿‘ä¼¼å¤šè¾¹å½¢æ›²çº¿ã€‚ç¬¬äºŒä¸ªå‚æ•°conPloy[i]å­˜å‚¨è¿‘ä¼¼çš„ç»“æœï¼Œæ˜¯è¾“å‡ºã€‚
 			
+			/*ä¾‹å¦‚ï¼šapproxPolyDP(contourMat, approxCurve, 10, true);//æ‰¾å‡ºè½®å»“çš„å¤šè¾¹å½¢æ‹Ÿåˆæ›²çº¿
+
+ç¬¬ä¸€ä¸ªå‚æ•° InputArray curveï¼šè¾“å…¥çš„ç‚¹é›†
+ç¬¬äºŒä¸ªå‚æ•°OutputArray approxCurveï¼šè¾“å‡ºçš„ç‚¹é›†ï¼Œå½“å‰ç‚¹é›†æ˜¯èƒ½æœ€å°åŒ…å®¹æŒ‡å®šç‚¹é›†çš„ã€‚ç”»å‡ºæ¥å³æ˜¯ä¸€ä¸ªå¤šè¾¹å½¢ã€‚
+ç¬¬ä¸‰ä¸ªå‚æ•°double epsilonï¼šæŒ‡å®šçš„ç²¾åº¦ï¼Œä¹Ÿå³æ˜¯åŸå§‹æ›²çº¿ä¸è¿‘ä¼¼æ›²çº¿ä¹‹é—´çš„æœ€å¤§è·ç¦»ã€‚
+ç¬¬å››ä¸ªå‚æ•°bool closedï¼šè‹¥ä¸ºtrueï¼Œåˆ™è¯´æ˜è¿‘ä¼¼æ›²çº¿æ˜¯é—­åˆçš„ï¼›åä¹‹ï¼Œè‹¥ä¸ºfalseï¼Œåˆ™æ–­å¼€ã€‚
+
+*/
 			
-			boundRect[i]=boundingRect(conPoly[i]);//¼ÆËã±ß½ç¾ØĞÎ
+			boundRect[i]=boundingRect(conPoly[i]);//è®¡ç®—è¾¹ç•ŒçŸ©å½¢
 			
-			int objCor = (int)conPoly[i].size();//ÕÒ½üËÆ¶à±ßĞÎµÄ½Çµã,Èı½ÇĞÎÓĞ3¸ö½Çµã£¬¾ØĞÎ/Õı·½ĞÎÓĞ4¸ö½Çµã£¬Ô²ĞÎ>4¸ö½Çµã
+			int objCor = (int)conPoly[i].size();//æ‰¾è¿‘ä¼¼å¤šè¾¹å½¢çš„è§’ç‚¹,ä¸‰è§’å½¢æœ‰3ä¸ªè§’ç‚¹ï¼ŒçŸ©å½¢/æ­£æ–¹å½¢æœ‰4ä¸ªè§’ç‚¹ï¼Œåœ†å½¢>4ä¸ªè§’ç‚¹
 			cout << objCor << endl;
 			if (objCor == 3) {objectType = "Tri";}
 			else if (objCor == 4) {
-				float aspRatio = (float)boundRect[i].width / (float)boundRect[i].height;//¿í¸ß±È
-				if (aspRatio > 0.95 && aspRatio < 1.05) { objectType = "Square";}//¾ØĞÎµÄ¿í¸ß±È²»»áÕıºÃµÈÓÚ1
+				float aspRatio = (float)boundRect[i].width / (float)boundRect[i].height;//å®½é«˜æ¯”
+				if (aspRatio > 0.95 && aspRatio < 1.05) { objectType = "Square";}//çŸ©å½¢çš„å®½é«˜æ¯”ä¸ä¼šæ­£å¥½ç­‰äº1
 				else objectType = "Rect";
 			}
 			else if (objCor > 4) { objectType = "Circle";}
 			
 			drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
-			rectangle/*»æÖÆ±ß½ç¾ØĞÎ*/(img, boundRect[i].tl()/*tl()£ºtopleft¾ØĞÎ×óÉÏ½Ç×ø±ê*/, boundRect[i].br()/*br()£ºbottom right¾ØĞÎÓÒÏÂ½Ç×ø±ê*/, Scalar(0, 255, 0), 5);
-			putText(img, objectType, {boundRect[i].x,boundRect[i].y-5}/*ÎÄ×Ö×ø±ê*/, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
+			rectangle/*ç»˜åˆ¶è¾¹ç•ŒçŸ©å½¢*/(img, boundRect[i].tl()/*tl()ï¼štopleftçŸ©å½¢å·¦ä¸Šè§’åæ ‡*/, boundRect[i].br()/*br()ï¼šbottom rightçŸ©å½¢å³ä¸‹è§’åæ ‡*/, Scalar(0, 255, 0), 5);
+			putText(img, objectType, {boundRect[i].x,boundRect[i].y-5}/*æ–‡å­—åæ ‡*/, FONT_HERSHEY_PLAIN, 1, Scalar(0, 69, 255), 2);
 		}
 	}
 }
@@ -59,20 +67,20 @@ void getContours(Mat imgDil,Mat img) {//imgDilÊÇ´«ÈëµÄÀ©ÕÅ±ßÔµµÄÍ¼ÏñÓÃÀ´²éÕÒÂÖÀª
 //	string path = "Resources/shapes.png";
 //	Mat img=imread(path);
 //	
-//	//ÔÚ¼ì²âĞÎ×´Ç°£¬¶ÔÍ¼Æ¬Ô¤´¦Àí£º×ª»»Îª»Ò¶È¡¢Ìí¼Ó¸ßË¹Ä£ºı¡¢Ê¹ÓÃCanny±ßÔµ¼ì²âÆ÷¡¢À©ÕÅ±ßÔµ
+//	//åœ¨æ£€æµ‹å½¢çŠ¶å‰ï¼Œå¯¹å›¾ç‰‡é¢„å¤„ç†ï¼šè½¬æ¢ä¸ºç°åº¦ã€æ·»åŠ é«˜æ–¯æ¨¡ç³Šã€ä½¿ç”¨Cannyè¾¹ç¼˜æ£€æµ‹å™¨ã€æ‰©å¼ è¾¹ç¼˜
 //	Mat imgGray, imgBlur, imgCanny, imgDil, imgErode;
-//	cvtColor(img, imgGray, COLOR_BGR2GRAY);//cvtÊÇconvertµÄËõĞ´£¬½«Í¼Ïñ´ÓÒ»ÖÖÑÕÉ«¿Õ¼ä×ª»»ÎªÁíÒ»ÖÖÑÕÉ«¿Õ¼ä¡£
-//	GaussianBlur(imgGray, imgBlur,Size(3,3),3,0);//Ê¹ÓÃ¸ßË¹ÂË²¨Æ÷Ä£ºıÍ¼Ïñ¡£¸Ãº¯Êı½«Ô´Í¼ÏñÓëÖ¸¶¨µÄ¸ßË¹ºË½øĞĞ¾í»ı,Size(7,7)ÊÇºË´óĞ¡,Êı×ÖÔ½´óÔ½Ä£ºı
-//	Canny(imgBlur, imgCanny, 25, 75);//±ßÔµ¼ì²â£¬ãĞÖµ1£¬2¿Éµ÷£¬Ä¿µÄ£ºÏÔÊ¾¸ü¶àµÄ±ßÔµ
-//	Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));//´´½¨Ò»¸öºË£¬Ôö¼ÓSize£¨Ö»ÄÜÊÇÆæÊı£©»áÀ©ÕÅ/ÇÖÊ´¸ü¶à
-//	dilate(imgCanny, imgDil, kernel);//À©ÕÅ±ßÔµ£¨Ôö¼Ó±ßÔµºñ¶È£©
+//	cvtColor(img, imgGray, COLOR_BGR2GRAY);//cvtæ˜¯convertçš„ç¼©å†™ï¼Œå°†å›¾åƒä»ä¸€ç§é¢œè‰²ç©ºé—´è½¬æ¢ä¸ºå¦ä¸€ç§é¢œè‰²ç©ºé—´ã€‚
+//	GaussianBlur(imgGray, imgBlur,Size(3,3),3,0);//ä½¿ç”¨é«˜æ–¯æ»¤æ³¢å™¨æ¨¡ç³Šå›¾åƒã€‚è¯¥å‡½æ•°å°†æºå›¾åƒä¸æŒ‡å®šçš„é«˜æ–¯æ ¸è¿›è¡Œå·ç§¯,Size(7,7)æ˜¯æ ¸å¤§å°,æ•°å­—è¶Šå¤§è¶Šæ¨¡ç³Š
+//	Canny(imgBlur, imgCanny, 25, 75);//è¾¹ç¼˜æ£€æµ‹ï¼Œé˜ˆå€¼1ï¼Œ2å¯è°ƒï¼Œç›®çš„ï¼šæ˜¾ç¤ºæ›´å¤šçš„è¾¹ç¼˜
+//	Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));//åˆ›å»ºä¸€ä¸ªæ ¸ï¼Œå¢åŠ Sizeï¼ˆåªèƒ½æ˜¯å¥‡æ•°ï¼‰ä¼šæ‰©å¼ /ä¾µèš€æ›´å¤š
+//	dilate(imgCanny, imgDil, kernel);//æ‰©å¼ è¾¹ç¼˜ï¼ˆå¢åŠ è¾¹ç¼˜åšåº¦ï¼‰
 //	
-//	getContours(imgDil,img);//imgÊÇÔÚÆäÉÏ»æÂÖÀªµÄÍ¼Æ¬
+//	getContours(imgDil,img);//imgæ˜¯åœ¨å…¶ä¸Šç»˜è½®å»“çš„å›¾ç‰‡
 //
 //	imshow("Image", img);
 //	/*imshow("Image Gray", imgGray);
 //	imshow("Image Blur", imgBlur);
 //	imshow("Image Canny", imgCanny);
 //	imshow("Image Dil", imgDil);*/
-//	waitKey(0);//Ôö¼ÓÑÓÊ±£¬0±íÊ¾ÎŞÇî
+//	waitKey(0);//å¢åŠ å»¶æ—¶ï¼Œ0è¡¨ç¤ºæ— ç©·
 //}
